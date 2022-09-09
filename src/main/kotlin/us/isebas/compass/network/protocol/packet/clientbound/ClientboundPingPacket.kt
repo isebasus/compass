@@ -3,18 +3,12 @@ package us.isebas.compass.network.protocol.packet.clientbound
 import us.isebas.compass.network.WrappedBuff
 import us.isebas.compass.network.protocol.handler.PacketHandler
 
-class ClientboundStatusPacket : ClientboundPacket {
-    private var data: String? = null
-
-    open fun data(): String? {
-        return data
-    }
-
+class ClientboundPingPacket : ClientboundPacket {
     override fun decode(buff: WrappedBuff) {
-        data = buff.readString()
+        TODO("Not yet implemented")
     }
 
     override fun handle(handler: PacketHandler) {
-        handler.handleStatus(this)
+        TODO("Not yet implemented")
     }
 }

@@ -1,14 +1,20 @@
 package us.isebas.compass.network.protocol.handler
 
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundHandshakePacket
+import net.kyori.adventure.text.Component
+import us.isebas.compass.network.protocol.packet.clientbound.ClientboundDisconnectPacket
+import us.isebas.compass.network.protocol.packet.clientbound.ClientboundPingPacket
+import us.isebas.compass.network.protocol.packet.clientbound.ClientboundStatusPacket
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundPingPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPacket
 
 interface PacketHandler {
 
-    fun handleHandshake()
+    fun handleHandshake(ping: Boolean)
 
-    fun handleStatus()
+    fun handleStatus(packet: ClientboundStatusPacket)
 
-    fun handlePing(packet: ServerboundPingPacket)
+    fun handlePing(packet: ClientboundPingPacket)
+
+    fun handleC2SDisconnect(reason: Component)
+
+    fun handleS2CDisconnect(packet: ClientboundDisconnectPacket)
 }

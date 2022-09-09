@@ -16,6 +16,7 @@ class Connection(private val server: MinecraftServer, private val channel: Chann
     init {
         packetHandler = DefaultPacketHandler(server, this)
         state = ConnectionState.HANDSHAKING
+        packetHandler.handleHandshake(false) // TODO implement ping handling
     }
 
     fun state(): ConnectionState {
@@ -32,10 +33,6 @@ class Connection(private val server: MinecraftServer, private val channel: Chann
 
     fun sendPacket(packet: Packet?) {
         channel.writeAndFlush(packet)
-    }
-
-    fun disconnect(reason: Component?) {
-        // TODO disconnect
     }
 
     fun close() {

@@ -9,8 +9,7 @@ import java.util.*
 
 enum class ConnectionState(private val map: EnumMap<FlowDirection, Int2ObjectOpenHashMap<Class<out Packet>>>) {
     HANDSHAKING(EnumMap(FlowDirection::class.java)),
-    STATUS(EnumMap(FlowDirection::class.java)),
-    PING(EnumMap(FlowDirection::class.java));
+    STATUS(EnumMap(FlowDirection::class.java));
 
     open fun packets(): EnumMap<FlowDirection, Int2ObjectOpenHashMap<Class<out Packet>>> {
         return map

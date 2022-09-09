@@ -7,9 +7,6 @@ import us.isebas.compass.network.Connection
 import us.isebas.compass.network.FlowDirection
 import us.isebas.compass.network.WrappedBuff
 import us.isebas.compass.network.protocol.packet.clientbound.ClientboundPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundPacket
-import java.nio.ByteBuffer.wrap
-
 
 class PacketDecoder(private val connection: Connection) : ReplayingDecoder<ClientboundPacket>() {
 
