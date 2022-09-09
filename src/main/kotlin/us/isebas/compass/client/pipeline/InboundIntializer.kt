@@ -1,10 +1,9 @@
-package us.isebas.compass.network.pipeline
+package us.isebas.compass.client.pipeline
 
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.socket.SocketChannel
 import us.isebas.compass.document.MinecraftServer
-import us.isebas.compass.network.Connection
-import us.isebas.compass.network.protocol.ConnectionState
+import us.isebas.compass.client.Connection
 
 open class InboundIntializer(private val minecraftServer: MinecraftServer) : ChannelInitializer<SocketChannel>() {
 

@@ -1,8 +1,8 @@
-package us.isebas.compass.network.protocol.packet.serverbound
+package us.isebas.compass.client.protocol.packet.serverbound
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import us.isebas.compass.network.WrappedBuff
+import us.isebas.compass.client.WrappedBuff
 
 class ServerboundDisconnectPacket(private val reason: Component) : ServerboundPacket {
 

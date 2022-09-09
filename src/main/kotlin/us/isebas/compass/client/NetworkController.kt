@@ -1,4 +1,4 @@
-package us.isebas.compass.network
+package us.isebas.compass.client
 
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.EventLoopGroup
@@ -12,7 +12,7 @@ import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
-import us.isebas.compass.network.pipeline.InboundIntializer
+import us.isebas.compass.client.pipeline.InboundIntializer
 
 open class NetworkController(private val server: MinecraftServer){
     private var inboundInitializer: InboundIntializer? = null

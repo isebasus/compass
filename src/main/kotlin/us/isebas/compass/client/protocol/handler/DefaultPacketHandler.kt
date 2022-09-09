@@ -1,17 +1,17 @@
-package us.isebas.compass.network.protocol.handler
+package us.isebas.compass.client.protocol.handler
 
 import com.beust.klaxon.Klaxon
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
-import us.isebas.compass.network.Connection
-import us.isebas.compass.network.protocol.ConnectionState
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundDisconnectPacket
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundStatusPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundDisconnectPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundHandshakePacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPacket
+import us.isebas.compass.client.Connection
+import us.isebas.compass.client.protocol.ConnectionState
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundDisconnectPacket
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundStatusPacket
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundDisconnectPacket
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundHandshakePacket
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundStatusPacket
 import us.isebas.compass.serializable.status.StatusResponse
 import javax.naming.InvalidNameException
 

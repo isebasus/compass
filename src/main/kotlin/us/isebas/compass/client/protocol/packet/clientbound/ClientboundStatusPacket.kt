@@ -1,7 +1,7 @@
-package us.isebas.compass.network.protocol.packet.clientbound
+package us.isebas.compass.client.protocol.packet.clientbound
 
-import us.isebas.compass.network.WrappedBuff
-import us.isebas.compass.network.protocol.handler.PacketHandler
+import us.isebas.compass.client.WrappedBuff
+import us.isebas.compass.client.protocol.handler.PacketHandler
 
 class ClientboundStatusPacket : ClientboundPacket {
     private var data: String? = null

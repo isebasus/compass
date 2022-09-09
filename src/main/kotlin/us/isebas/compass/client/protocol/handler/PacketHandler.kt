@@ -1,8 +1,8 @@
-package us.isebas.compass.network.protocol.handler
+package us.isebas.compass.client.protocol.handler
 
 import net.kyori.adventure.text.Component
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundDisconnectPacket
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundStatusPacket
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundDisconnectPacket
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundStatusPacket
 
 interface PacketHandler {
 

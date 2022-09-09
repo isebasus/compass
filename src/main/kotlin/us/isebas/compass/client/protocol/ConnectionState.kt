@@ -1,8 +1,8 @@
-package us.isebas.compass.network.protocol
+package us.isebas.compass.client.protocol
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import us.isebas.compass.network.FlowDirection
-import us.isebas.compass.network.protocol.packet.Packet
+import us.isebas.compass.client.FlowDirection
+import us.isebas.compass.client.protocol.packet.Packet
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 

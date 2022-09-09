@@ -1,12 +1,11 @@
-package us.isebas.compass.network
+package us.isebas.compass.client
 
 import io.netty.channel.Channel
-import net.kyori.adventure.text.Component;
 import us.isebas.compass.document.MinecraftServer
-import us.isebas.compass.network.protocol.ConnectionState
-import us.isebas.compass.network.protocol.handler.DefaultPacketHandler
-import us.isebas.compass.network.protocol.handler.PacketHandler
-import us.isebas.compass.network.protocol.packet.Packet
+import us.isebas.compass.client.protocol.ConnectionState
+import us.isebas.compass.client.protocol.handler.DefaultPacketHandler
+import us.isebas.compass.client.protocol.handler.PacketHandler
+import us.isebas.compass.client.protocol.packet.Packet
 
 
 class Connection(private val server: MinecraftServer, private val channel: Channel) {

@@ -1,8 +1,7 @@
-package us.isebas.compass.network.protocol.packet.serverbound
+package us.isebas.compass.client.protocol.packet.serverbound
 
 import us.isebas.compass.document.MinecraftServer
-import us.isebas.compass.network.WrappedBuff
-import us.isebas.compass.network.protocol.handler.PacketHandler
+import us.isebas.compass.client.WrappedBuff
 
 
 class ServerboundHandshakePacket(

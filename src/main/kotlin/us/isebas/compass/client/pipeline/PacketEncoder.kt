@@ -1,12 +1,12 @@
-package us.isebas.compass.network.pipeline
+package us.isebas.compass.client.pipeline
 
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
-import us.isebas.compass.network.Connection
-import us.isebas.compass.network.WrappedBuff
-import us.isebas.compass.network.protocol.Protocol
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundPacket
+import us.isebas.compass.client.Connection
+import us.isebas.compass.client.WrappedBuff
+import us.isebas.compass.client.protocol.Protocol
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundPacket
 
 
 class PacketEncoder(connection: Connection) : MessageToByteEncoder<ServerboundPacket?>() {

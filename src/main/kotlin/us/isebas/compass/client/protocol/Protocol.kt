@@ -1,15 +1,15 @@
-package us.isebas.compass.network.protocol
+package us.isebas.compass.client.protocol
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2IntMap
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
-import us.isebas.compass.network.FlowDirection
-import us.isebas.compass.network.protocol.packet.Packet
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundDisconnectPacket
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundStatusPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundDisconnectPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundHandshakePacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPacket
+import us.isebas.compass.client.FlowDirection
+import us.isebas.compass.client.protocol.packet.Packet
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundDisconnectPacket
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundStatusPacket
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundDisconnectPacket
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundHandshakePacket
+import us.isebas.compass.client.protocol.packet.serverbound.ServerboundStatusPacket
 
 
 object Protocol {

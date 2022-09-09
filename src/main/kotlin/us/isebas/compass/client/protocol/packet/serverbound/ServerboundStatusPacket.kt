@@ -1,6 +1,6 @@
-package us.isebas.compass.network.protocol.packet.serverbound
+package us.isebas.compass.client.protocol.packet.serverbound
 
-import us.isebas.compass.network.WrappedBuff
+import us.isebas.compass.client.WrappedBuff
 
 class ServerboundStatusPacket : ServerboundPacket {
     override fun encode(buff: WrappedBuff) {

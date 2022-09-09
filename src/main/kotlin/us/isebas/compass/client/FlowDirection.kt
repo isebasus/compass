@@ -1,4 +1,4 @@
-package us.isebas.compass.network
+package us.isebas.compass.client
 
 enum class FlowDirection {
     CLIENTBOUND,

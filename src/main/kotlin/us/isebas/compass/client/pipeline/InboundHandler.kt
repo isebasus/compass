@@ -1,10 +1,9 @@
-package us.isebas.compass.network.pipeline
+package us.isebas.compass.client.pipeline
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
-import us.isebas.compass.network.Connection
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundPacket
-import us.isebas.compass.network.protocol.packet.serverbound.ServerboundPacket
+import us.isebas.compass.client.Connection
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundPacket
 
 class InboundHandler(private val connection: Connection) : SimpleChannelInboundHandler<ClientboundPacket>() {
 
