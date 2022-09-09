@@ -8,7 +8,6 @@ import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.network.Connection
 import us.isebas.compass.network.protocol.ConnectionState
 import us.isebas.compass.network.protocol.packet.clientbound.ClientboundDisconnectPacket
-import us.isebas.compass.network.protocol.packet.clientbound.ClientboundPingPacket
 import us.isebas.compass.network.protocol.packet.clientbound.ClientboundStatusPacket
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundDisconnectPacket
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundHandshakePacket
@@ -16,7 +15,7 @@ import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPa
 import us.isebas.compass.serializable.status.StatusResponse
 import javax.naming.InvalidNameException
 
-class DefaultPacketHandler(private val server: MinecraftServer, private val connection: Connection, private val ping: Boolean) : PacketHandler {
+class DefaultPacketHandler(private val server: MinecraftServer, private val connection: Connection) : PacketHandler {
     /* Serverbound packets */
 
     override fun handleHandshake() {
@@ -58,9 +57,8 @@ class DefaultPacketHandler(private val server: MinecraftServer, private val conn
         server.description = deserializedData?.description?.text.toString()
         server.favicon = deserializedData?.favicon.toString()
         server.status = ServerStatus.ONLINE
-    }
 
-    override fun handlePing(packet: ClientboundPingPacket) {
+        handleServerboundDisconnect(text("Completed Tasks"))
     }
 
     override fun handleClientboundDisconnect(packet: ClientboundDisconnectPacket) {
