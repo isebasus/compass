@@ -12,7 +12,11 @@ class MinecraftServer {
     var address: String = ""
     var port: Int = 25565
     var protocolVersion: Int = 760
+    var serverVersion: String = ""
+    var maxPlayerCount: Int? = null
     var playerCount: Int? = null
+    var description: String = ""
+    var favicon: String = ""
     var status: ServerStatus? = ServerStatus.NEW
 }
 

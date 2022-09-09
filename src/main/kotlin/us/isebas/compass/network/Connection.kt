@@ -14,9 +14,10 @@ class Connection(private val server: MinecraftServer, private val channel: Chann
     private var state: ConnectionState
 
     init {
-        packetHandler = DefaultPacketHandler(server, this)
+        // TODO implement ping handling
+        packetHandler = DefaultPacketHandler(server, this, false)
         state = ConnectionState.HANDSHAKING
-        packetHandler.handleHandshake(false) // TODO implement ping handling
+        packetHandler.handleHandshake()
     }
 
     fun state(): ConnectionState {

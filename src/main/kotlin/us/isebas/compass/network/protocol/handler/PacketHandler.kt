@@ -10,7 +10,7 @@ interface PacketHandler {
 
     /* Serverbound packets */
 
-    fun handleHandshake(ping: Boolean)
+    fun handleHandshake()
 
     fun handleServerboundDisconnect(reason: Component)
 

@@ -1,5 +1,6 @@
 package us.isebas.compass.network.protocol.handler
 
+import com.beust.klaxon.Klaxon
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import us.isebas.compass.document.MinecraftServer
@@ -12,11 +13,13 @@ import us.isebas.compass.network.protocol.packet.clientbound.ClientboundStatusPa
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundDisconnectPacket
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundHandshakePacket
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPacket
+import us.isebas.compass.serializable.status.StatusResponse
+import javax.naming.InvalidNameException
 
-class DefaultPacketHandler(private val server: MinecraftServer, private val connection: Connection) : PacketHandler {
+class DefaultPacketHandler(private val server: MinecraftServer, private val connection: Connection, private val ping: Boolean) : PacketHandler {
     /* Serverbound packets */
 
-    override fun handleHandshake(ping: Boolean) {
+    override fun handleHandshake() {
         if (connection.state() != ConnectionState.HANDSHAKING) {
             handleServerboundDisconnect(text("Already handled handshake"))
             return
@@ -36,17 +39,28 @@ class DefaultPacketHandler(private val server: MinecraftServer, private val conn
 
     override fun handleStatus(packet: ClientboundStatusPacket) {
         if (connection.state() != ConnectionState.STATUS) {
-            // Disconnect or something
             handleServerboundDisconnect(text("Already handled status"))
             return
         }
+        // Get data from packet
         val data: String? = packet.data()
-        // TODO deserialize data
+        if (data == null) {
+            server.status = ServerStatus.OFFLINE
+            handleServerboundDisconnect(text("Invalid data."))
+            throw InvalidNameException("No data received from server ${server.address}")
+        }
+
+        // Deserialize data
+        val deserializedData = Klaxon().parse<StatusResponse>(data)
+        server.serverVersion = deserializedData?.version?.name.toString()
+        server.maxPlayerCount = deserializedData?.players?.max
+        server.playerCount = deserializedData?.players?.online
+        server.description = deserializedData?.description?.text.toString()
+        server.favicon = deserializedData?.favicon.toString()
         server.status = ServerStatus.ONLINE
     }
 
     override fun handlePing(packet: ClientboundPingPacket) {
-        TODO("Not yet implemented")
     }
 
     override fun handleClientboundDisconnect(packet: ClientboundDisconnectPacket) {

@@ -11,9 +11,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import us.isebas.compass.document.MinecraftServer
+import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.network.pipeline.InboundIntializer
 
-open class NetworkController(val server: MinecraftServer){
+open class NetworkController(private val server: MinecraftServer){
     private var inboundInitializer: InboundIntializer? = null
 
     open fun start() {
@@ -39,6 +40,7 @@ open class NetworkController(val server: MinecraftServer){
             cause = error.cause ?: cause
         }
         error.printStackTrace()
+        server.status = ServerStatus.OFFLINE
         disconnect()
     }
 
