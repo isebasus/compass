@@ -14,7 +14,7 @@ import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.pipeline.InboundIntializer
 
-open class NetworkController(private val server: MinecraftServer){
+open class ClientController(private val server: MinecraftServer){
     private var inboundInitializer: InboundIntializer? = null
 
     open fun start() {

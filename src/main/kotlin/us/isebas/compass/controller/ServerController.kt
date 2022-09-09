@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
-import us.isebas.compass.client.NetworkController
+import us.isebas.compass.client.ClientController
 import us.isebas.compass.service.ServerService
 
 @RestController
@@ -24,8 +24,8 @@ class ServerController(@Autowired private val service: ServerService) {
     @PostMapping
     fun save(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
         // TODO create tcp connection for Minecraft Server to get information
-        val networkController = NetworkController(server)
-        networkController.start()
+        val clientController = ClientController(server)
+        clientController.start()
         server.status = ServerStatus.ONLINE
         return ResponseEntity.ok(service.save(server))
     }
