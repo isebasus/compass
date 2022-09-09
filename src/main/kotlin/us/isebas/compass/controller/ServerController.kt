@@ -1,13 +1,11 @@
 package us.isebas.compass.controller
 
-import org.apache.catalina.Server
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.mongodb.core.aggregation.AccumulatorOperators
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
-import us.isebas.compass.network.NetworkController
+import us.isebas.compass.client.NetworkController
 import us.isebas.compass.service.ServerService
 
 @RestController
