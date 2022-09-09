@@ -6,13 +6,19 @@ import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.network.Connection
 import us.isebas.compass.network.protocol.ConnectionState
 
-class InboundIntializer(private val minecraftServer: MinecraftServer) : ChannelInitializer<SocketChannel>() {
+open class InboundIntializer(private val minecraftServer: MinecraftServer) : ChannelInitializer<SocketChannel>() {
+
+    private var connection: Connection? = null
+
+    open fun getConnection(): Connection? {
+        return connection
+    }
 
     override fun initChannel(channel: SocketChannel) {
-        val connection = Connection(minecraftServer, channel)
+        connection = Connection(minecraftServer, channel)
         channel.pipeline()
-                .addLast(PacketDecoder(connection))
-                .addLast(PacketEncoder(connection))
-                .addLast(InboundHandler(connection))
+                .addLast(PacketDecoder(connection!!))
+                .addLast(PacketEncoder(connection!!))
+                .addLast(InboundHandler(connection!!))
     }
 }

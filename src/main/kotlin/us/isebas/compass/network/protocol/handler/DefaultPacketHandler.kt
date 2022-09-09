@@ -14,9 +14,11 @@ import us.isebas.compass.network.protocol.packet.serverbound.ServerboundHandshak
 import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPacket
 
 class DefaultPacketHandler(private val server: MinecraftServer, private val connection: Connection) : PacketHandler {
+    /* Serverbound packets */
+
     override fun handleHandshake(ping: Boolean) {
         if (connection.state() != ConnectionState.HANDSHAKING) {
-            handleC2SDisconnect(text("Already handled handshake"))
+            handleServerboundDisconnect(text("Already handled handshake"))
             return
         }
         connection.sendPacket(ServerboundHandshakePacket(server, 1))
@@ -26,10 +28,16 @@ class DefaultPacketHandler(private val server: MinecraftServer, private val conn
         connection.sendPacket(ServerboundStatusPacket())
     }
 
+    override fun handleServerboundDisconnect(reason: Component) {
+        connection.sendPacket(ServerboundDisconnectPacket(reason))
+    }
+
+    /* Clientbound packets */
+
     override fun handleStatus(packet: ClientboundStatusPacket) {
         if (connection.state() != ConnectionState.STATUS) {
             // Disconnect or something
-            handleC2SDisconnect(text("Already handled status"))
+            handleServerboundDisconnect(text("Already handled status"))
             return
         }
         val data: String? = packet.data()
@@ -41,11 +49,7 @@ class DefaultPacketHandler(private val server: MinecraftServer, private val conn
         TODO("Not yet implemented")
     }
 
-    override fun handleC2SDisconnect(reason: Component) {
-        connection.sendPacket(ServerboundDisconnectPacket(reason))
-        connection.close()
-    }
-    override fun handleS2CDisconnect(packet: ClientboundDisconnectPacket) {
+    override fun handleClientboundDisconnect(packet: ClientboundDisconnectPacket) {
         connection.close()
     }
 }

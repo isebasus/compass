@@ -8,13 +8,17 @@ import us.isebas.compass.network.protocol.packet.serverbound.ServerboundPingPack
 
 interface PacketHandler {
 
+    /* Serverbound packets */
+
     fun handleHandshake(ping: Boolean)
+
+    fun handleServerboundDisconnect(reason: Component)
+
+    /* Clientbound packets */
 
     fun handleStatus(packet: ClientboundStatusPacket)
 
     fun handlePing(packet: ClientboundPingPacket)
 
-    fun handleC2SDisconnect(reason: Component)
-
-    fun handleS2CDisconnect(packet: ClientboundDisconnectPacket)
+    fun handleClientboundDisconnect(packet: ClientboundDisconnectPacket)
 }

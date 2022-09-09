@@ -1,8 +1,6 @@
 package us.isebas.compass.network
 
 import io.netty.bootstrap.Bootstrap
-import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.ChannelOption
 import io.netty.channel.EventLoopGroup
 import io.netty.channel.ServerChannel
 import io.netty.channel.epoll.Epoll
@@ -16,6 +14,7 @@ import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.network.pipeline.InboundIntializer
 
 open class NetworkController(val server: MinecraftServer){
+    private var inboundInitializer: InboundIntializer? = null
 
     open fun start() {
         val bootstrap = createClientBootstrap()
@@ -28,7 +27,7 @@ open class NetworkController(val server: MinecraftServer){
     }
 
     open fun disconnect() {
-        // TODO figure out how to disconnect
+        inboundInitializer?.getConnection()?.close()
         return
     }
 
@@ -39,15 +38,18 @@ open class NetworkController(val server: MinecraftServer){
         } else if (cause is EncoderException) {
             cause = error.cause ?: cause
         }
-        // TODO figure out how to detect errors
+        error.printStackTrace()
         disconnect()
     }
 
     private fun createClientBootstrap(): Bootstrap {
         val clientBootstrap = Bootstrap()
+        inboundInitializer = InboundIntializer(server)
+
+        // Initialize bootstrap
         clientBootstrap.group(createGroup())
         clientBootstrap.channel(channelClass())
-        clientBootstrap.handler(InboundIntializer(server))
+        clientBootstrap.handler(inboundInitializer)
         return clientBootstrap
     }
 
