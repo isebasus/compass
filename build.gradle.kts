@@ -17,6 +17,8 @@ repositories {
 }
 
 dependencies {
+	implementation("me.lucko:adventure-api:4.9.4")
+	implementation("it.unimi.dsi:fastutil:8.5.2")
 	implementation("io.netty:netty-all:4.1.59.Final")
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")

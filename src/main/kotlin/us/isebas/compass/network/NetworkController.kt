@@ -1,5 +1,6 @@
 package us.isebas.compass.network
 
+import io.netty.bootstrap.Bootstrap
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelOption
 import io.netty.channel.EventLoopGroup
@@ -9,31 +10,45 @@ import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.epoll.EpollServerSocketChannel
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioServerSocketChannel
+import io.netty.handler.codec.DecoderException
+import io.netty.handler.codec.EncoderException
 import us.isebas.compass.document.MinecraftServer
+import us.isebas.compass.network.pipeline.InboundIntializer
 
-class NetworkController(val server: MinecraftServer){
+open class NetworkController(val server: MinecraftServer){
 
     open fun start() {
-        val bootstrap = createServerBootstrap()
-        val channelFuture = server.port?.let { bootstrap.bind(it).sync() }
-        if (channelFuture == null) {
-            System.err.println("Unable to start server: ${server.address}")
-            return
+        val bootstrap = createClientBootstrap()
+        val future = bootstrap.connect(server.address, server.port)
+        future.addListener {
+            if (!it.isSuccess) {
+                handleError(it.cause())
+            }
         }
-        if (!channelFuture.isSuccess()) {
-            System.err.println("Unable to bind server: ${server.address} to port: ${server.port}")
-            return
-        }
-        channelFuture.channel().closeFuture().sync()
     }
 
-    private fun createServerBootstrap(): ServerBootstrap {
-        val serverBootstrap = ServerBootstrap()
-        serverBootstrap.group(createGroup())
-        serverBootstrap.channel(channelClass())
-        serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true)
-        serverBootstrap.childHandler(InboundInitializer(server))
-        return serverBootstrap
+    open fun disconnect() {
+        // TODO figure out how to disconnect
+        return
+    }
+
+    open fun handleError(error: Throwable) {
+        var cause = error
+        if (cause is DecoderException) {
+            cause = error.cause ?: cause
+        } else if (cause is EncoderException) {
+            cause = error.cause ?: cause
+        }
+        // TODO figure out how to detect errors
+        disconnect()
+    }
+
+    private fun createClientBootstrap(): Bootstrap {
+        val clientBootstrap = Bootstrap()
+        clientBootstrap.group(createGroup())
+        clientBootstrap.channel(channelClass())
+        clientBootstrap.handler(InboundIntializer(server))
+        return clientBootstrap
     }
 
     private fun createGroup(): EventLoopGroup {

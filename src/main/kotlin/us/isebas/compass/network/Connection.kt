@@ -1,14 +1,44 @@
 package us.isebas.compass.network
 
 import io.netty.channel.Channel
+import net.kyori.adventure.text.Component;
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.network.protocol.ConnectionState
 import us.isebas.compass.network.protocol.handler.DefaultPacketHandler
+import us.isebas.compass.network.protocol.handler.PacketHandler
+import us.isebas.compass.network.protocol.packet.Packet
 
-class Connection(private val server: MinecraftServer,
-                 private val channel: Channel,
-                 private val packetHandler: DefaultPacketHandler = DefaultPacketHandler(server, this),
-                 private val state: ConnectionState = ConnectionState.HANDSHAKING)
-{
 
+class Connection(private val server: MinecraftServer, private val channel: Channel) {
+    private val packetHandler: PacketHandler
+    private var state: ConnectionState
+
+    init {
+        packetHandler = DefaultPacketHandler(server, this)
+        state = ConnectionState.HANDSHAKING
+    }
+
+    fun state(): ConnectionState {
+        return state
+    }
+
+    fun packetHandler(): PacketHandler {
+        return packetHandler
+    }
+
+    fun setState(state: ConnectionState) {
+        this.state = state
+    }
+
+    fun sendPacket(packet: Packet?) {
+        channel.writeAndFlush(packet)
+    }
+
+    fun disconnect(reason: Component?) {
+        // TODO disconnect
+    }
+
+    fun close() {
+        channel.closeFuture()
+    }
 }

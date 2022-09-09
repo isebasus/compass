@@ -6,7 +6,5 @@ import us.isebas.compass.network.protocol.packet.Packet
 
 interface ServerboundPacket : Packet {
 
-    fun decode(buff: WrappedBuff)
-
-    fun handle(handler: PacketHandler)
+    fun encode(buff: WrappedBuff)
 }

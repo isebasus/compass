@@ -9,8 +9,9 @@ import java.net.InetAddress
 class MinecraftServer {
     @Id
     var id: String? = ObjectId().toHexString()
-    var address: String? = ""
-    var port: Int? = 25565
+    var address: String = ""
+    var port: Int = 25565
+    var protocolVersion: Int = 760
     var playerCount: Int? = null
     var status: ServerStatus? = ServerStatus.NEW
 }

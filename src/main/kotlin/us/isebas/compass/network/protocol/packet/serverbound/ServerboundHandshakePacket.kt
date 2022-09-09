@@ -1,21 +1,20 @@
 package us.isebas.compass.network.protocol.packet.serverbound
 
+import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.network.WrappedBuff
 import us.isebas.compass.network.protocol.handler.PacketHandler
 
 
-abstract class ServerboundHandshakePacket : ServerboundPacket {
-    private var username: String? = null
+class ServerboundHandshakePacket(
+        private val server: MinecraftServer,
+        private val nextState: Int)
+    : ServerboundPacket {
 
-    open fun username(): String? {
-        return username
+    override fun encode(buff: WrappedBuff) {
+        buff.writeInt(server.protocolVersion)
+                .writeString(server.address)
+                .writeShort(server.port.toShort())
+                .writeInt(nextState)
     }
 
-    override fun decode(buff: WrappedBuff) {
-        username = buff.readString()
-    }
-
-    override fun handle(handler: PacketHandler) {
-        handler.handleHandshake(this)
-    }
 }

@@ -6,9 +6,9 @@ import us.isebas.compass.network.protocol.packet.serverbound.ServerboundStatusPa
 
 interface PacketHandler {
 
-    fun handleHandshake(packet: ServerboundHandshakePacket)
+    fun handleHandshake()
 
-    fun handleStatus(packet: ServerboundStatusPacket)
+    fun handleStatus()
 
     fun handlePing(packet: ServerboundPingPacket)
 }
