@@ -9,6 +9,6 @@ class ClientboundDisconnectPacket : ClientboundPacket {
     }
 
     override fun handle(handler: PacketHandler) {
-        handler.handleDisconnect(this)
+        handler.handleClientboundDisconnect(this)
     }
 }
