@@ -42,7 +42,7 @@ class DefaultPacketHandler(private val server: MinecraftServer, private val conn
             return
         }
         // Get data from packet
-        val data: String? = packet.data()
+        val data = packet.data()
         if (data == null) {
             server.status = ServerStatus.OFFLINE
             handleServerboundDisconnect(text("Invalid data."))

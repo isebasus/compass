@@ -2,20 +2,26 @@ package us.isebas.compass.client.pipeline
 
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
+import io.netty.handler.codec.MessageToMessageDecoder
 import io.netty.handler.codec.ReplayingDecoder
 import us.isebas.compass.client.Connection
 import us.isebas.compass.client.FlowDirection
-import us.isebas.compass.client.WrappedBuff
 import us.isebas.compass.client.protocol.packet.clientbound.ClientboundPacket
+import us.isebas.compass.client.util.io.InByteBuffer
 
-class PacketDecoder(private val connection: Connection) : ReplayingDecoder<ClientboundPacket>() {
+class PacketDecoder(private val connection: Connection) : MessageToMessageDecoder<ByteArray>() {
+    companion object {
+        const val NAME = "packet_decoder"
+    }
 
-    override fun decode(context: ChannelHandlerContext?, buff: ByteBuf, decoded: MutableList<Any>?) {
-        val packetId = buff.readUnsignedByte()
-        val packet = connection.state().packetById(FlowDirection.CLIENTBOUND, packetId.toInt()) as ClientboundPacket? ?: return
+    override fun decode(ctx: ChannelHandlerContext, arr: ByteArray, out: MutableList<Any>) {
+        val buffer = InByteBuffer(arr)
+        val packetId = buffer.readVarInt()
 
-        packet.decode(WrappedBuff.wrap(buff))
-        decoded!!.add(packet)
+        val packet = connection.state().packetById(FlowDirection.CLIENTBOUND, packetId) as ClientboundPacket? ?: return
+        packet.decode(buffer)
+
+        out.add(packet)
     }
 
 }

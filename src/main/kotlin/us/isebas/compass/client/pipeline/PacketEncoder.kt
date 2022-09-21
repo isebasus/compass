@@ -1,32 +1,28 @@
 package us.isebas.compass.client.pipeline
 
-import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
-import io.netty.handler.codec.MessageToByteEncoder
+import io.netty.handler.codec.MessageToMessageEncoder
 import us.isebas.compass.client.Connection
-import us.isebas.compass.client.WrappedBuff
+import us.isebas.compass.client.util.io.OutByteBuffer
 import us.isebas.compass.client.protocol.Protocol
 import us.isebas.compass.client.protocol.packet.serverbound.ServerboundPacket
 
 
-class PacketEncoder(connection: Connection) : MessageToByteEncoder<ServerboundPacket?>() {
-    private val connection: Connection
+class PacketEncoder(private val connection: Connection) : MessageToMessageEncoder<ServerboundPacket>() {
 
-
-    override fun encode(context: ChannelHandlerContext?, packet: ServerboundPacket?, buff: ByteBuf?) {
-        val packetId: Int? = packet?.let { Protocol.packetId(it) }
-
-        if (packet == null || packetId == null || buff == null) {
-            // TODO idk handle something
-            return
-        }
-        check(packetId != -1) { "Packet " + packet.javaClass + " is not registered." }
-
-        buff.writeByte(packetId)
-        packet.encode(WrappedBuff.wrap(buff))
+    companion object {
+        const val NAME = "packet_encoder"
     }
 
-    init {
-        this.connection = connection
+    override fun encode(ctx: ChannelHandlerContext?, packet: ServerboundPacket, out: MutableList<Any>) {
+        val packetId = Protocol.packetId(packet)
+
+        check(packetId != -1) { "Packet " + packet.javaClass + " is not registered." }
+
+        val data = OutByteBuffer()
+        data.writeVarInt(packetId)
+        packet.encode(data)
+
+        out += data.toArray()
     }
 }

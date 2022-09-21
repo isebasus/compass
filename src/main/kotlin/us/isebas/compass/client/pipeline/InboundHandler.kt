@@ -7,10 +7,11 @@ import us.isebas.compass.client.protocol.packet.clientbound.ClientboundPacket
 
 class InboundHandler(private val connection: Connection) : SimpleChannelInboundHandler<ClientboundPacket>() {
 
-    override fun channelRead0(context: ChannelHandlerContext?, packet: ClientboundPacket?) {
-        if (packet == null || context == null) {
-            return
-        }
+    companion object {
+        const val NAME = "client_packet_handler"
+    }
+
+    override fun channelRead0(context: ChannelHandlerContext, packet: ClientboundPacket) {
         println("Received packet ${packet.javaClass.simpleName}.")
         packet.handle(connection.packetHandler())
     }

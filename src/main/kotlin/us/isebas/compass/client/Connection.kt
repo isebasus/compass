@@ -15,7 +15,6 @@ class Connection(private val server: MinecraftServer, private val channel: Chann
     init {
         packetHandler = DefaultPacketHandler(server, this)
         state = ConnectionState.HANDSHAKING
-        packetHandler.handleHandshake()
     }
 
     fun state(): ConnectionState {
@@ -30,8 +29,13 @@ class Connection(private val server: MinecraftServer, private val channel: Chann
         this.state = state
     }
 
-    fun sendPacket(packet: Packet?) {
-        channel.writeAndFlush(packet)
+    fun sendPacket(packet: Packet) {
+        val lastWriteFuture = channel.writeAndFlush(packet)
+        lastWriteFuture.addListener {
+            if (!it.isSuccess) {
+                println(it.cause().message)
+            }
+        }
     }
 
     fun close() {

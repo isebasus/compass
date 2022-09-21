@@ -2,17 +2,18 @@ package us.isebas.compass.client
 
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.EventLoopGroup
-import io.netty.channel.ServerChannel
 import io.netty.channel.epoll.Epoll
 import io.netty.channel.epoll.EpollEventLoopGroup
-import io.netty.channel.epoll.EpollServerSocketChannel
+import io.netty.channel.epoll.EpollSocketChannel
 import io.netty.channel.nio.NioEventLoopGroup
-import io.netty.channel.socket.nio.NioServerSocketChannel
+import io.netty.channel.socket.SocketChannel
+import io.netty.channel.socket.nio.NioSocketChannel
 import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.pipeline.InboundIntializer
+import us.isebas.compass.client.util.threading.NamedThreadFactory
 
 open class ClientController(private val server: MinecraftServer){
     private var inboundInitializer: InboundIntializer? = null
@@ -58,12 +59,12 @@ open class ClientController(private val server: MinecraftServer){
     private fun createGroup(): EventLoopGroup {
         return if (Epoll.isAvailable())
             EpollEventLoopGroup()
-            else NioEventLoopGroup()
+            else NioEventLoopGroup(NamedThreadFactory("Nio#%d"))
     }
 
-    private fun channelClass(): Class<out ServerChannel> {
+    private fun channelClass(): Class<out SocketChannel> {
         return if (Epoll.isAvailable())
-            EpollServerSocketChannel::class.java
-            else NioServerSocketChannel::class.java
+            EpollSocketChannel::class.java
+            else NioSocketChannel::class.java
     }
 }
