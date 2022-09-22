@@ -4,10 +4,11 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.timeout.ReadTimeoutHandler
+import us.isebas.compass.client.ClientController
 import us.isebas.compass.client.Connection
 import us.isebas.compass.document.MinecraftServer
 
-open class InboundIntializer(private val minecraftServer: MinecraftServer) : ChannelInitializer<SocketChannel>() {
+open class InboundIntializer(private val client: ClientController, private val minecraftServer: MinecraftServer) : ChannelInitializer<SocketChannel>() {
 
     private lateinit var connection: Connection
     private val SOCKET_TIMEOUT = 30000
@@ -30,7 +31,7 @@ open class InboundIntializer(private val minecraftServer: MinecraftServer) : Cha
         pipeline.addLast(LengthEncoder.NAME, LengthEncoder(maxLength))
         pipeline.addLast(PacketEncoder.NAME, PacketEncoder(connection))
 
-        connection.packetHandler().handleHandshake()
+        pipeline.addLast("client", client)
     }
 
     override fun channelActive(context: ChannelHandlerContext) {

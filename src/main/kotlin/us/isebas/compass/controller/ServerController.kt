@@ -24,14 +24,10 @@ class ServerController(@Autowired private val service: ServerService) {
 
     @PostMapping
     fun save(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
-        // TODO create tcp connection for Minecraft Server to get information
-        println(server.address)
-        println(server.port)
         val clientController = ClientController(server)
         clientController.start()
-        server.status = ServerStatus.ONLINE
-        sleep(10000)
-        println(server.playerCount)
+
+        // Save server into mongodb
         return ResponseEntity.ok(service.save(server))
     }
 

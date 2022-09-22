@@ -51,6 +51,7 @@ class LengthDecoder(
 
         if (length > maxLength) {
             // TODO handle this in some way
+            println("length is too large to decode")
             return
         }
 

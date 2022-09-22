@@ -16,6 +16,7 @@ class LengthEncoder(
     override fun encode(context: ChannelHandlerContext, data: ByteArray, buff: ByteBuf) {
         if (data.size > maxLength) {
             // TODO idk handle something
+            println("encoding size exception")
             return
         }
 

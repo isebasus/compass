@@ -1,7 +1,7 @@
 package us.isebas.compass.client
 
 import io.netty.bootstrap.Bootstrap
-import io.netty.channel.EventLoopGroup
+import io.netty.channel.*
 import io.netty.channel.epoll.Epoll
 import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.epoll.EpollSocketChannel
@@ -15,8 +15,9 @@ import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.pipeline.InboundIntializer
 import us.isebas.compass.client.util.threading.NamedThreadFactory
 
-open class ClientController(private val server: MinecraftServer){
+open class ClientController(private val server: MinecraftServer) : SimpleChannelInboundHandler<Any>() {
     private var inboundInitializer: InboundIntializer? = null
+    private var channel: Channel? = null
 
     open fun start() {
         val bootstrap = createClientBootstrap()
@@ -47,7 +48,7 @@ open class ClientController(private val server: MinecraftServer){
 
     private fun createClientBootstrap(): Bootstrap {
         val clientBootstrap = Bootstrap()
-        inboundInitializer = InboundIntializer(server)
+        inboundInitializer = InboundIntializer(this, server)
 
         // Initialize bootstrap
         clientBootstrap.group(createGroup())
@@ -67,4 +68,21 @@ open class ClientController(private val server: MinecraftServer){
             EpollSocketChannel::class.java
             else NioSocketChannel::class.java
     }
+
+    override fun channelRead0(ctx: ChannelHandlerContext?, msg: Any?) {
+    }
+
+    override fun channelActive(context: ChannelHandlerContext) {
+        try {
+            context.channel().config().setOption(ChannelOption.TCP_NODELAY, true)
+        } catch (_: Throwable) {
+        }
+        this.channel = context.channel()
+        inboundInitializer?.getConnection()?.packetHandler()?.handleHandshake()
+    }
+
+    override fun channelInactive(context: ChannelHandlerContext) {
+        // TODO handle channel inactive
+    }
+
 }

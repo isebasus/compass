@@ -15,5 +15,4 @@ class ServerboundHandshakePacket(
         buff.writeShort(server.port.toShort())
         buff.writeVarInt(nextState)
     }
-
 }
