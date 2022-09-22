@@ -7,6 +7,7 @@ import io.netty.handler.codec.ReplayingDecoder
 import us.isebas.compass.client.Connection
 import us.isebas.compass.client.FlowDirection
 import us.isebas.compass.client.protocol.packet.clientbound.ClientboundPacket
+import us.isebas.compass.client.protocol.packet.clientbound.ClientboundStatusPacket
 import us.isebas.compass.client.util.io.InByteBuffer
 
 class PacketDecoder(private val connection: Connection) : MessageToMessageDecoder<ByteArray>() {

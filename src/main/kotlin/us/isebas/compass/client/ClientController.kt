@@ -14,23 +14,29 @@ import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.pipeline.InboundIntializer
 import us.isebas.compass.client.util.threading.NamedThreadFactory
+import java.util.concurrent.CompletableFuture
 
 open class ClientController(private val server: MinecraftServer) : SimpleChannelInboundHandler<Any>() {
-    private var inboundInitializer: InboundIntializer? = null
-    private var channel: Channel? = null
+    private lateinit var inboundInitializer: InboundIntializer
+    private lateinit var completableFuture: CompletableFuture<Void>
+    private lateinit var channel: Channel
 
-    open fun start() {
+    open fun start(): CompletableFuture<Void> {
         val bootstrap = createClientBootstrap()
         val future = bootstrap.connect(server.address, server.port)
         future.addListener {
             if (!it.isSuccess) {
                 handleError(it.cause())
             }
+            println("Client: Connection with ${server.address} successful.")
         }
+
+        completableFuture = CompletableFuture<Void>()
+        return completableFuture
     }
 
     open fun disconnect() {
-        inboundInitializer?.getConnection()?.close()
+        inboundInitializer.getConnection()?.close()
         return
     }
 
@@ -78,11 +84,12 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
         } catch (_: Throwable) {
         }
         this.channel = context.channel()
-        inboundInitializer?.getConnection()?.packetHandler()?.handleHandshake()
+        inboundInitializer.getConnection()?.packetHandler()?.handleHandshake()
     }
 
     override fun channelInactive(context: ChannelHandlerContext) {
-        // TODO handle channel inactive
+        println("Client: Completed fetching server status for ${server.address} ")
+        completableFuture.complete(null)
     }
 
 }

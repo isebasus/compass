@@ -8,6 +8,7 @@ import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.ClientController
 import us.isebas.compass.service.ServerService
 import java.lang.Thread.sleep
+import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("v1/server")
@@ -25,7 +26,14 @@ class ServerController(@Autowired private val service: ServerService) {
     @PostMapping
     fun save(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
         val clientController = ClientController(server)
-        clientController.start()
+        val future = clientController.start()
+        future.get(5, TimeUnit.SECONDS)
+
+        if (server.serverVersion == "" && server.maxPlayerCount == null &&
+            server.playerCount == null) {
+            // Send back a null minecraft server
+            return ResponseEntity.ok(MinecraftServer())
+        }
 
         // Save server into mongodb
         return ResponseEntity.ok(service.save(server))

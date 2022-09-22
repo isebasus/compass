@@ -12,7 +12,7 @@ class InboundHandler(private val connection: Connection) : SimpleChannelInboundH
     }
 
     override fun channelRead0(context: ChannelHandlerContext, packet: ClientboundPacket) {
-        println("Received packet ${packet.javaClass.simpleName}.")
+        println("Client: Received packet ${packet.javaClass.simpleName}.")
         packet.handle(connection.packetHandler())
     }
 }
