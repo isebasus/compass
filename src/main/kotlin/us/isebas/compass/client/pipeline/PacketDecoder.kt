@@ -1,13 +1,10 @@
 package us.isebas.compass.client.pipeline
 
-import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageDecoder
-import io.netty.handler.codec.ReplayingDecoder
-import us.isebas.compass.client.Connection
+import us.isebas.compass.client.connection.Connection
 import us.isebas.compass.client.FlowDirection
 import us.isebas.compass.client.protocol.packet.clientbound.ClientboundPacket
-import us.isebas.compass.client.protocol.packet.clientbound.ClientboundStatusPacket
 import us.isebas.compass.client.util.io.InByteBuffer
 
 class PacketDecoder(private val connection: Connection) : MessageToMessageDecoder<ByteArray>() {

@@ -13,34 +13,40 @@ import java.util.concurrent.TimeUnit
 @RestController
 @RequestMapping("v1/server")
 class ServerController(@Autowired private val service: ServerService) {
-    @GetMapping
-    fun getAll(): ResponseEntity<List<MinecraftServer>> {
-        return ResponseEntity.ok(service.findAll())
+    private lateinit var server: MinecraftServer
+
+    private fun getServerInfo(): ResponseEntity<MinecraftServer> {
+        val clientController = ClientController(server)
+        val future = clientController.start()
+
+        return try {
+            future.get(5, TimeUnit.SECONDS)
+            ResponseEntity.ok(server)
+        } catch (e: Exception) {
+            // Return a null object
+            println(e)
+            val response = MinecraftServer()
+            response.status = ServerStatus.NOTFOUND
+            ResponseEntity.ok(response)
+        }
     }
 
-    @GetMapping("/{status}")
-    fun findByStatus(@PathVariable("status") status: ServerStatus): ResponseEntity<List<MinecraftServer>> {
-        return ResponseEntity.ok(service.findByStatus(status))
+    @GetMapping
+    fun getAll(): ResponseEntity<MinecraftServer> {
+        if (!this::server.isInitialized) {
+            // Return a null object
+            println("Uninitialized server object")
+            val response = MinecraftServer()
+            response.status = ServerStatus.UNINITIALIZED
+            return ResponseEntity.ok(response)
+        }
+
+        return getServerInfo()
     }
 
     @PostMapping
     fun save(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
-        val clientController = ClientController(server)
-        val future = clientController.start()
-        future.get(5, TimeUnit.SECONDS)
-
-        if (server.serverVersion == "" && server.maxPlayerCount == null &&
-            server.playerCount == null) {
-            // Send back a null minecraft server
-            return ResponseEntity.ok(MinecraftServer())
-        }
-
-        // Save server into mongodb
-        return ResponseEntity.ok(service.save(server))
-    }
-
-    @DeleteMapping
-    fun delete(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
-        return ResponseEntity.ok(service.save(server))
+        this.server = server
+        return getServerInfo()
     }
 }

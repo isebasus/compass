@@ -5,10 +5,14 @@ import io.netty.channel.ChannelInitializer
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.timeout.ReadTimeoutHandler
 import us.isebas.compass.client.ClientController
-import us.isebas.compass.client.Connection
+import us.isebas.compass.client.connection.Connection
 import us.isebas.compass.document.MinecraftServer
+import java.util.concurrent.CompletableFuture
 
-open class InboundIntializer(private val client: ClientController, private val minecraftServer: MinecraftServer) : ChannelInitializer<SocketChannel>() {
+open class InboundIntializer(private val client: ClientController,
+                             private val minecraftServer: MinecraftServer,
+                             private val completableFuture: CompletableFuture<Void>
+) : ChannelInitializer<SocketChannel>() {
 
     private lateinit var connection: Connection
     private val SOCKET_TIMEOUT = 30000
@@ -19,7 +23,7 @@ open class InboundIntializer(private val client: ClientController, private val m
     }
 
     override fun initChannel(channel: SocketChannel) {
-        connection = Connection(minecraftServer, channel)
+        connection = Connection(minecraftServer, channel, completableFuture)
         val pipeline = channel.pipeline()
 
         pipeline.addLast("timeout", ReadTimeoutHandler(SOCKET_TIMEOUT / 1000))

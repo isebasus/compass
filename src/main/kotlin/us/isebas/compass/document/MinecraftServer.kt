@@ -21,5 +21,5 @@ class MinecraftServer {
 }
 
 enum class ServerStatus {
-    NEW, ONLINE, OFFLINE
+    NEW, ONLINE, OFFLINE, NOTFOUND, UNINITIALIZED
 }

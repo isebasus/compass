@@ -2,7 +2,7 @@ package us.isebas.compass.client.pipeline
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToMessageEncoder
-import us.isebas.compass.client.Connection
+import us.isebas.compass.client.connection.Connection
 import us.isebas.compass.client.util.io.OutByteBuffer
 import us.isebas.compass.client.protocol.Protocol
 import us.isebas.compass.client.protocol.packet.serverbound.ServerboundPacket

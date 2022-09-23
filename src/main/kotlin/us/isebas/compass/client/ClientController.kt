@@ -22,6 +22,9 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
     private lateinit var channel: Channel
 
     open fun start(): CompletableFuture<Void> {
+        // Init completable future
+        completableFuture = CompletableFuture<Void>()
+
         val bootstrap = createClientBootstrap()
         val future = bootstrap.connect(server.address, server.port)
         future.addListener {
@@ -30,9 +33,11 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
             }
             println("Client: Connection with ${server.address} successful.")
         }
-
-        completableFuture = CompletableFuture<Void>()
         return completableFuture
+    }
+
+    open fun getClientPool() {
+        // TODO implement something
     }
 
     open fun disconnect() {
@@ -54,7 +59,7 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
 
     private fun createClientBootstrap(): Bootstrap {
         val clientBootstrap = Bootstrap()
-        inboundInitializer = InboundIntializer(this, server)
+        inboundInitializer = InboundIntializer(this, server, completableFuture)
 
         // Initialize bootstrap
         clientBootstrap.group(createGroup())
@@ -89,7 +94,6 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
 
     override fun channelInactive(context: ChannelHandlerContext) {
         println("Client: Completed fetching server status for ${server.address} ")
-        completableFuture.complete(null)
     }
 
 }

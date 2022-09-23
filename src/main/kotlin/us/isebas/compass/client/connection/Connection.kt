@@ -1,4 +1,4 @@
-package us.isebas.compass.client
+package us.isebas.compass.client.connection
 
 import io.netty.channel.Channel
 import us.isebas.compass.document.MinecraftServer
@@ -6,14 +6,17 @@ import us.isebas.compass.client.protocol.ConnectionState
 import us.isebas.compass.client.protocol.handler.DefaultPacketHandler
 import us.isebas.compass.client.protocol.handler.PacketHandler
 import us.isebas.compass.client.protocol.packet.Packet
+import java.util.concurrent.CompletableFuture
 
 
-class Connection(private val server: MinecraftServer, private val channel: Channel) {
+class Connection(private val server: MinecraftServer,
+                 private val channel: Channel,
+                 private val completableFuture: CompletableFuture<Void>) {
     private val packetHandler: PacketHandler
     private var state: ConnectionState
 
     init {
-        packetHandler = DefaultPacketHandler(server, this)
+        packetHandler = DefaultPacketHandler(server, this, completableFuture)
         state = ConnectionState.HANDSHAKING
     }
 
