@@ -11,9 +11,9 @@ import io.netty.channel.socket.nio.NioSocketChannel
 import io.netty.handler.codec.DecoderException
 import io.netty.handler.codec.EncoderException
 import us.isebas.compass.document.MinecraftServer
-import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.pipeline.InboundIntializer
 import us.isebas.compass.client.util.threading.NamedThreadFactory
+import us.isebas.compass.document.ServerError
 import java.util.concurrent.CompletableFuture
 
 open class ClientController(private val server: MinecraftServer) : SimpleChannelInboundHandler<Any>() {
@@ -53,7 +53,7 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
             cause = error.cause ?: cause
         }
         error.printStackTrace()
-        server.status = ServerStatus.OFFLINE
+        server.status = ServerError.BADREQUEST
         disconnect()
     }
 

@@ -17,9 +17,14 @@ class MinecraftServer {
     var playerCount: Int? = null
     var description: String = ""
     var favicon: String = ""
-    var status: ServerStatus? = ServerStatus.NEW
+    var averageTps: Long = 0
+    var numberOfPings: Long = 0
+    var status: ServerError? = ServerError.UNINITIALIZED
 }
 
-enum class ServerStatus {
-    NEW, ONLINE, OFFLINE, NOTFOUND, UNINITIALIZED
+enum class ServerError {
+    SUCCESS,
+    BADREQUEST,
+    NOTFOUND,
+    UNINITIALIZED
 }

@@ -4,7 +4,6 @@ import com.beust.klaxon.Klaxon
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import us.isebas.compass.document.MinecraftServer
-import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.connection.Connection
 import us.isebas.compass.client.protocol.ConnectionState
 import us.isebas.compass.client.protocol.packet.clientbound.ClientboundDisconnectPacket
@@ -14,6 +13,7 @@ import us.isebas.compass.client.protocol.packet.serverbound.ServerboundDisconnec
 import us.isebas.compass.client.protocol.packet.serverbound.ServerboundHandshakePacket
 import us.isebas.compass.client.protocol.packet.serverbound.ServerboundPingPacket
 import us.isebas.compass.client.protocol.packet.serverbound.ServerboundStatusPacket
+import us.isebas.compass.document.ServerError
 import us.isebas.compass.serializable.status.StatusResponse
 import java.util.concurrent.CompletableFuture
 import javax.naming.InvalidNameException
@@ -22,6 +22,8 @@ class DefaultPacketHandler(private val server: MinecraftServer,
                            private val connection: Connection,
                            private var completableFuture: CompletableFuture<Void>
                                 ) : PacketHandler {
+
+    private var systemTime: Long = 0
 
     /* Serverbound packets */
     override fun handleHandshake() {
@@ -42,6 +44,9 @@ class DefaultPacketHandler(private val server: MinecraftServer,
         }
 
         connection.sendPacket(ServerboundStatusPacket())
+
+        server.numberOfPings++
+        systemTime = System.currentTimeMillis()
     }
 
     override fun handleServerboundPing() {
@@ -63,11 +68,11 @@ class DefaultPacketHandler(private val server: MinecraftServer,
             handleServerboundDisconnect(text("Already handled status"))
             return
         }
-        
+
         // Get data from packet
         val data = packet.data()
         if (data == null) {
-            server.status = ServerStatus.OFFLINE
+            server.status = ServerError.BADREQUEST
             handleServerboundDisconnect(text("Invalid data."))
             throw InvalidNameException("No data received from server ${server.address}")
         }
@@ -79,16 +84,19 @@ class DefaultPacketHandler(private val server: MinecraftServer,
         server.playerCount = deserializedData?.players?.online
         server.description = deserializedData?.description?.text.toString()
         server.favicon = deserializedData?.favicon.toString()
-        server.status = ServerStatus.ONLINE
+        server.status = ServerError.SUCCESS
 
         handleServerboundPing()
     }
 
     override fun handleClientboundPing(packet: ClientboundPingPacket) {
+        val pingTime = System.currentTimeMillis() - systemTime
+
         if (connection.state() != ConnectionState.STATUS) {
             handleServerboundDisconnect(text("Already handled ping"))
             return
         }
+        server.averageTps = server.averageTps + ((pingTime - server.averageTps) / server.numberOfPings)
 
         // TODO get time from when packet was sent and when packet was received
         completableFuture.complete(null)

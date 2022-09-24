@@ -4,15 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import us.isebas.compass.document.MinecraftServer
-import us.isebas.compass.document.ServerStatus
 import us.isebas.compass.client.ClientController
-import us.isebas.compass.service.ServerService
+import us.isebas.compass.document.ServerError
 import java.lang.Thread.sleep
 import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("v1/server")
-class ServerController(@Autowired private val service: ServerService) {
+class ServerController() {
     private lateinit var server: MinecraftServer
 
     private fun getServerInfo(): ResponseEntity<MinecraftServer> {
@@ -25,9 +24,8 @@ class ServerController(@Autowired private val service: ServerService) {
         } catch (e: Exception) {
             // Return a null object
             println(e)
-            val response = MinecraftServer()
-            response.status = ServerStatus.NOTFOUND
-            ResponseEntity.ok(response)
+            server.status = ServerError.NOTFOUND
+            ResponseEntity.ok(server)
         }
     }
 
@@ -36,9 +34,7 @@ class ServerController(@Autowired private val service: ServerService) {
         if (!this::server.isInitialized) {
             // Return a null object
             println("Uninitialized server object")
-            val response = MinecraftServer()
-            response.status = ServerStatus.UNINITIALIZED
-            return ResponseEntity.ok(response)
+            return ResponseEntity.ok(MinecraftServer())
         }
 
         return getServerInfo()
@@ -49,4 +45,5 @@ class ServerController(@Autowired private val service: ServerService) {
         this.server = server
         return getServerInfo()
     }
+
 }
