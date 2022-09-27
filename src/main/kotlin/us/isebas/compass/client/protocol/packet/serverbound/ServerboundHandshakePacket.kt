@@ -11,7 +11,7 @@ class ServerboundHandshakePacket(
 
     override fun encode(buff: OutByteBuffer) {
         buff.writeVarInt(server.protocolVersion)
-        buff.writeString(server.address)
+        buff.writeString(server.hostname)
         buff.writeShort(server.port.toShort())
         buff.writeVarInt(nextState)
     }

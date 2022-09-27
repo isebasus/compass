@@ -26,12 +26,12 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
         completableFuture = CompletableFuture<Void>()
 
         val bootstrap = createClientBootstrap()
-        val future = bootstrap.connect(server.address, server.port)
+        val future = bootstrap.connect(server.hostname, server.port)
         future.addListener {
             if (!it.isSuccess) {
                 handleError(it.cause())
             }
-            println("Client: Connection with ${server.address} successful.")
+            println("Client: Connection with ${server.hostname} successful.")
         }
         return completableFuture
     }
@@ -93,7 +93,7 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
     }
 
     override fun channelInactive(context: ChannelHandlerContext) {
-        println("Client: Completed fetching server status for ${server.address} ")
+        println("Client: Completed fetching server status for ${server.hostname} ")
     }
 
 }

@@ -74,14 +74,14 @@ class DefaultPacketHandler(private val server: MinecraftServer,
         if (data == null) {
             server.status = ServerError.BADREQUEST
             handleServerboundDisconnect(text("Invalid data."))
-            throw InvalidNameException("No data received from server ${server.address}")
+            throw InvalidNameException("No data received from server ${server.hostname}")
         }
 
         // Deserialize data
         val deserializedData = Klaxon().parse<StatusResponse>(data)
         server.serverVersion = deserializedData?.version?.name.toString()
         server.maxPlayerCount = deserializedData?.players?.max
-        server.playerCount = deserializedData?.players?.online
+        deserializedData?.players?.online?.let { server.playerCount.add(it) }
         server.description = deserializedData?.description?.text.toString()
         server.favicon = deserializedData?.favicon.toString()
         server.status = ServerError.SUCCESS
@@ -96,9 +96,11 @@ class DefaultPacketHandler(private val server: MinecraftServer,
             handleServerboundDisconnect(text("Already handled ping"))
             return
         }
-        server.averageTps = server.averageTps + ((pingTime - server.averageTps) / server.numberOfPings)
 
-        // TODO get time from when packet was sent and when packet was received
+        var average: Long = server.averageTps.last()
+        average += ((pingTime - average) / server.numberOfPings)
+        server.averageTps.add(average);
+
         completableFuture.complete(null)
         handleServerboundDisconnect(text("Client: Completed fetching server status and ping"))
     }
