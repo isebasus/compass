@@ -10,7 +10,8 @@ import java.lang.Thread.sleep
 import java.util.concurrent.TimeUnit
 
 @RestController
-@RequestMapping("v1/server")
+@CrossOrigin(origins = ["http://locahost:3000"])
+@RequestMapping("/v1/server")
 class ServerController() {
     private lateinit var server: MinecraftServer
 
@@ -44,6 +45,11 @@ class ServerController() {
     fun save(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
         this.server = server
         return getServerInfo()
+    }
+
+    @RequestMapping
+    fun anyRequest() {
+        println("Received Request");
     }
 
 }
