@@ -1,50 +1,84 @@
 package us.isebas.compass.controller
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.client.ClientController
 import us.isebas.compass.document.ServerError
-import java.lang.Thread.sleep
+import us.isebas.compass.document.ServerStatus
+import java.lang.Error
+import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
 @RestController
 @CrossOrigin(origins = ["http://locahost:3000"])
-@RequestMapping("/v1/server")
 class ServerController() {
-    private lateinit var server: MinecraftServer
 
-    private fun getServerInfo(): ResponseEntity<MinecraftServer> {
+    /* Used to cache data of clients */
+    private var hashMap: HashMap<String, MinecraftServer> = hashMapOf()
+
+    private fun getServerInfo(server: MinecraftServer) {
         val clientController = ClientController(server)
         val future = clientController.start()
 
-        return try {
+        try {
             future.get(5, TimeUnit.SECONDS)
-            ResponseEntity.ok(server)
         } catch (e: Exception) {
             // Return a null object
             println(e)
             server.status = ServerError.NOTFOUND
-            ResponseEntity.ok(server)
         }
     }
 
-    @GetMapping
-    fun getAll(): ResponseEntity<MinecraftServer> {
-        if (!this::server.isInitialized) {
-            // Return a null object
-            println("Uninitialized server object")
-            return ResponseEntity.ok(MinecraftServer())
+    @PostMapping("v1/ping")
+    fun pingServer(@RequestBody server: MinecraftServer): ResponseEntity<ServerStatus> {
+        val status = ServerStatus()
+
+        val address: InetSocketAddress
+        try {
+            address = InetSocketAddress(server.hostname, server.port)
+        } catch (socketError: Error) {
+            status.status = ServerError.NOTFOUND
+            return ResponseEntity.ok(status)
         }
 
-        return getServerInfo()
+        val cachedServer: MinecraftServer? = hashMap[address.toString()]
+        if (cachedServer == null) {
+            status.status = ServerError.NOTFOUND
+            return ResponseEntity.ok(status)
+        }
+
+        getServerInfo(cachedServer)
+        if (server.status != ServerError.SUCCESS) {
+            status.status = server.status
+            return ResponseEntity.ok(status)
+        }
+        status.playerCount = cachedServer.playerCount
+        status.averagePing = cachedServer.averagePing
+        status.numberOfPings = cachedServer.numberOfPings
+        status.ping = cachedServer.ping
+        status.status = cachedServer.status
+
+        return ResponseEntity.ok(status)
     }
 
-    @PostMapping
-    fun save(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
-        this.server = server
-        return getServerInfo()
+    @PostMapping("v1/init")
+    fun initServer(@RequestBody server: MinecraftServer): ResponseEntity<MinecraftServer> {
+        getServerInfo(server)
+        if (server.status != ServerError.SUCCESS) {
+            return ResponseEntity.ok(server)
+        }
+
+        val address: InetSocketAddress
+        try {
+            address = InetSocketAddress(server.hostname, server.port)
+        } catch (socketError: Error) {
+            server.status = ServerError.NOTFOUND
+            return ResponseEntity.ok(server)
+        }
+
+        hashMap[address.toString()] = server
+        return ResponseEntity.ok(server)
     }
 
     @RequestMapping

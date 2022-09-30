@@ -25,7 +25,10 @@ class CompassConfig {
     fun corsConfigurer(): WebMvcConfigurer {
         return object : WebMvcConfigurer {
             override fun addCorsMappings(registry: CorsRegistry) {
-                registry.addMapping("/v1/server").allowedOrigins("http://localhost:3000")
+                registry.addMapping("/v1/init")
+                    .allowedOrigins("http://localhost:3000")
+                registry.addMapping("/v1/ping")
+                    .allowedOrigins("http://localhost:3000")
             }
         }
     }

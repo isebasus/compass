@@ -12,7 +12,8 @@ class MinecraftServer {
     var playerCount: MutableList<Int> = mutableListOf()
     var description: String = ""
     var favicon: String = ""
-    var averageTps: MutableList<Long> = MutableList(1) {0}
+    var ping: Long = 0
+    var averagePing: MutableList<Long> = MutableList(1) {0}
     var numberOfPings: Long = 0
     var status: ServerError? = ServerError.UNINITIALIZED
 }

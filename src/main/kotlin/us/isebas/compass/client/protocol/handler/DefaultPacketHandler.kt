@@ -96,10 +96,11 @@ class DefaultPacketHandler(private val server: MinecraftServer,
             handleServerboundDisconnect(text("Already handled ping"))
             return
         }
+        server.ping = pingTime
 
-        var average: Long = server.averageTps.last()
+        var average: Long = server.averagePing.last()
         average += ((pingTime - average) / server.numberOfPings)
-        server.averageTps.add(average);
+        server.averagePing.add(average);
 
         completableFuture.complete(null)
         handleServerboundDisconnect(text("Client: Completed fetching server status and ping"))
