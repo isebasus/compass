@@ -79,6 +79,7 @@ class DefaultPacketHandler(private val server: MinecraftServer,
 
         // Deserialize data
         val deserializedData = Klaxon().parse<StatusResponse>(data)
+        server.protocolVersion = deserializedData?.version?.protocol ?: 0
         server.serverVersion = deserializedData?.version?.name.toString()
         server.maxPlayerCount = deserializedData?.players?.max
         deserializedData?.players?.online?.let { server.playerCount.add(it) }

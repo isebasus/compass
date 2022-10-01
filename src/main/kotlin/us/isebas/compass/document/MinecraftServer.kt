@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 class MinecraftServer {
     var hostname: String = ""
     var port: Int = 25565
-    var protocolVersion: Int = 760
+    var protocolVersion: Int = 0
     var serverVersion: String = ""
     var maxPlayerCount: Int? = null
     var playerCount: MutableList<Int> = mutableListOf()
@@ -16,6 +16,7 @@ class MinecraftServer {
     var averagePing: MutableList<Long> = MutableList(1) {0}
     var numberOfPings: Long = 0
     var status: ServerError? = ServerError.UNINITIALIZED
+    var lastClientPing: Long = 0
 }
 
 enum class ServerError {
