@@ -39,6 +39,19 @@ class ServerController() {
         startCacheService(cacheService)
     }
 
+    /*
+    * pingServer
+    *
+    * This API call is used for established servers only,
+    * this time, the response should respond with
+    * ServerStatus rather than MinecraftServer
+    *
+    * @param MinecraftServer post data should look like:
+    * data = {
+    *   hostname: String,
+    *   port: Int
+    * }
+    * */
     @PostMapping("v1/ping")
     fun pingServer(@RequestBody server: MinecraftServer): ResponseEntity<ServerStatus> {
         val status = ServerStatus()
@@ -76,6 +89,18 @@ class ServerController() {
         return ResponseEntity.ok(status)
     }
 
+    /*
+    * initServer
+    *
+    * This API call is used to initialize a server in the cache.
+    * Then after the client should use the function pingServer()
+    *
+    * @param MinecraftServer post data should look like:
+    * data = {
+    *   hostname: String,
+    *   port: Int
+    * }
+    * */
     @PostMapping("v1/init")
     fun initServer(@RequestBody minecraftServer: MinecraftServer): ResponseEntity<MinecraftServer> {
         val server: MinecraftServer = minecraftServer
@@ -119,14 +144,35 @@ class ServerController() {
         println("Received Request");
     }
 
+    /*
+    * startDishwasher
+    *
+    * This function starts the dishwasher.
+    *
+    * @param Thread process to run
+    * */
     private fun startDishwasher(dishwasher: Thread) {
         dishwasher.start()
     }
 
+    /*
+    * startCacheService
+    *
+    * This function starts the cache service.
+    *
+    * @param Thread process to run
+    * */
     private fun startCacheService(cacheService: Thread) {
         cacheService.start()
     }
 
+    /*
+    * getServerInfo
+    *
+    * This function updates the MinecraftServer data
+    *
+    * @param MinecraftServer server to be updated
+    * */
     private fun getServerInfo(server: MinecraftServer) {
         val clientController = ClientController(server)
         val future = clientController.start()
@@ -140,6 +186,13 @@ class ServerController() {
         }
     }
 
+    /*
+    * getDishwasher
+    *
+    * This function returns the thread that cleans the cache
+    *
+    * @return Thread
+    * */
     private fun getDishwasher(): Thread {
         return Thread {
             println("Dishwasher: Started washer.")
@@ -156,6 +209,13 @@ class ServerController() {
         }
     }
 
+    /*
+    * getCachedService
+    *
+    * This function returns the thread that updated the cache.
+    *
+    * @return Thread
+    * */
     private fun getCacheService(): Thread {
         return Thread {
             println("Cache Service: Started service.")
