@@ -31,66 +31,12 @@ class ServerController() {
 
     init {
         // Start dishwasher to clean up cache
-        val dishwasher = Thread {
-            println("Dishwasher: Started washer.")
-            while (!Thread.currentThread().isInterrupted) {
-                Thread.sleep(DISHWASHER_SLEEPTIME.toLong()) // Sleep for 20 seconds
-
-                for ((key, value) in hashMap) {
-                    if (System.currentTimeMillis() - value.lastClientPing > MAXTIME.toLong()) {
-                        hashMap.remove(key)
-                    }
-                }
-                println("Dishwasher: Cleaned up cache, size is: ${hashMap.size}.")
-            }
-        }
+        val dishwasher = getDishwasher()
         startDishwasher(dishwasher)
 
         // Start caching
-        val cacheService = Thread {
-            println("Cache Service: Started service.")
-            while (!Thread.currentThread().isInterrupted) {
-                Thread.sleep(SERVICE_SLEEPTIME.toLong()) // Sleep for 2 seconds
-                if (hashMap.size <= 0 ) {
-                    continue
-                }
-
-                for ((key, server) in hashMap) {
-                    if (server.status != ServerError.SUCCESS && server.status != ServerError.UNINITIALIZED) {
-                        continue
-                    }
-                    getServerInfo(server)
-                    if (server.status != ServerError.SUCCESS) {
-                        hashMap[key] = server
-                        continue
-                    }
-                    hashMap[key] = server
-                    println("Cache Service: Successfully updated information for ${server.hostname}")
-                }
-            }
-        }
+        val cacheService = getCacheService()
         startCacheService(cacheService)
-    }
-
-    private fun startDishwasher(dishwasher: Thread) {
-        dishwasher.start()
-    }
-
-    private fun startCacheService(cacheService: Thread) {
-        cacheService.start()
-    }
-
-    private fun getServerInfo(server: MinecraftServer) {
-        val clientController = ClientController(server)
-        val future = clientController.start()
-
-        try {
-            future.get(5, TimeUnit.SECONDS)
-        } catch (e: Exception) {
-            // Return a null object
-            println(e)
-            server.status = ServerError.NOTFOUND
-        }
     }
 
     @PostMapping("v1/ping")
@@ -171,6 +117,68 @@ class ServerController() {
     @RequestMapping
     fun anyRequest() {
         println("Received Request");
+    }
+
+    private fun startDishwasher(dishwasher: Thread) {
+        dishwasher.start()
+    }
+
+    private fun startCacheService(cacheService: Thread) {
+        cacheService.start()
+    }
+
+    private fun getServerInfo(server: MinecraftServer) {
+        val clientController = ClientController(server)
+        val future = clientController.start()
+
+        try {
+            future.get(5, TimeUnit.SECONDS)
+        } catch (e: Exception) {
+            // Return a null object
+            println(e)
+            server.status = ServerError.NOTFOUND
+        }
+    }
+
+    private fun getDishwasher(): Thread {
+        return Thread {
+            println("Dishwasher: Started washer.")
+            while (!Thread.currentThread().isInterrupted) {
+                Thread.sleep(DISHWASHER_SLEEPTIME.toLong()) // Sleep for 20 seconds
+
+                for ((key, value) in hashMap) {
+                    if (System.currentTimeMillis() - value.lastClientPing > MAXTIME.toLong()) {
+                        hashMap.remove(key)
+                    }
+                }
+                println("Dishwasher: Cleaned up cache, size is: ${hashMap.size}.")
+            }
+        }
+    }
+
+    private fun getCacheService(): Thread {
+        return Thread {
+            println("Cache Service: Started service.")
+            while (!Thread.currentThread().isInterrupted) {
+                Thread.sleep(SERVICE_SLEEPTIME.toLong()) // Sleep for 2 seconds
+                if (hashMap.size <= 0 ) {
+                    continue
+                }
+
+                for ((key, server) in hashMap) {
+                    if (server.status != ServerError.SUCCESS && server.status != ServerError.UNINITIALIZED) {
+                        continue
+                    }
+                    getServerInfo(server)
+                    if (server.status != ServerError.SUCCESS) {
+                        hashMap[key] = server
+                        continue
+                    }
+                    hashMap[key] = server
+                    println("Cache Service: Successfully updated information for ${server.hostname}")
+                }
+            }
+        }
     }
 
 }
