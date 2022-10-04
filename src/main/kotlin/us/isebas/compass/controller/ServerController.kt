@@ -1,21 +1,22 @@
 package us.isebas.compass.controller
 
-import org.springframework.data.mongodb.core.aggregation.AccumulatorOperators
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.client.ClientController
 import us.isebas.compass.controller.ApiConstants.DISHWASHER_SLEEPTIME
 import us.isebas.compass.controller.ApiConstants.MAXTIME
 import us.isebas.compass.controller.ApiConstants.SERVICE_SLEEPTIME
+import us.isebas.compass.document.MinecraftServer
 import us.isebas.compass.document.ServerError
 import us.isebas.compass.document.ServerStatus
-import java.lang.Error
 import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import kotlin.math.min
+import kotlin.system.exitProcess
+
 
 object ApiConstants {
     const val MAXTIME = 20000
@@ -32,6 +33,7 @@ class ServerController() {
 
     init {
         // Start dishwasher to clean up cache
+
         val dishwasher = getDishwasher()
         startDishwasher(dishwasher)
 
@@ -163,8 +165,15 @@ class ServerController() {
     *
     * @param Thread process to run
     * */
-    private fun startDishwasher(dishwasher: Thread) {
-        dishwasher.start()
+    private fun startDishwasher(dishwasher: Runnable) {
+        println("Dishwasher: Starting washer.")
+        val dishwasherService = Executors.newScheduledThreadPool(1)
+        dishwasherService.scheduleAtFixedRate(object : Runnable {
+            private val executor = Executors.newSingleThreadExecutor()
+            override fun run() {
+                executor.submit(dishwasher)
+            }
+        }, 0, 20, TimeUnit.SECONDS)
     }
 
     /*
@@ -174,8 +183,15 @@ class ServerController() {
     *
     * @param Thread process to run
     * */
-    private fun startCacheService(cacheService: Thread) {
-        cacheService.start()
+    private fun startCacheService(cache: Runnable) {
+        println("Cache Service: Starting service.")
+        val cacheService = Executors.newScheduledThreadPool(1)
+        cacheService.scheduleAtFixedRate(object : Runnable {
+            private val executor = Executors.newSingleThreadExecutor()
+            override fun run() {
+                executor.submit(cache)
+            }
+        }, 0, 5, TimeUnit.SECONDS)
     }
 
     /*
@@ -205,19 +221,19 @@ class ServerController() {
     *
     * @return Thread
     * */
-    private fun getDishwasher(): Thread {
-        return Thread {
-            println("Dishwasher: Started washer.")
-            while (!Thread.currentThread().isInterrupted) {
-                Thread.sleep(DISHWASHER_SLEEPTIME.toLong()) // Sleep for 20 seconds
-
-                for ((key, value) in hashMap) {
-                    if (System.currentTimeMillis() - value.lastClientPing > MAXTIME.toLong()) {
-                        hashMap.remove(key)
-                    }
-                }
-                println("Dishwasher: Cleaned up cache, size is: ${hashMap.size}.")
+    private fun getDishwasher(): Runnable {
+        return Runnable {
+            if (hashMap.size <= 0 ) {
+                println("Dishwasher: Cache is empty.")
+                return@Runnable
             }
+
+            for ((key, value) in hashMap) {
+                if (System.currentTimeMillis() - value.lastClientPing > MAXTIME.toLong()) {
+                    hashMap.remove(key)
+                }
+            }
+            println("Dishwasher: Cleaned up cache, size is: ${hashMap.size}.")
         }
     }
 
@@ -228,27 +244,23 @@ class ServerController() {
     *
     * @return Thread
     * */
-    private fun getCacheService(): Thread {
-        return Thread {
-            println("Cache Service: Started service.")
-            while (!Thread.currentThread().isInterrupted) {
-                Thread.sleep(SERVICE_SLEEPTIME.toLong()) // Sleep for 2 seconds
-                if (hashMap.size <= 0 ) {
+    private fun getCacheService(): Runnable {
+        return Runnable {
+            if (hashMap.size <= 0 ) {
+                return@Runnable
+            }
+
+            for ((key, server) in hashMap) {
+                if (server.status != ServerError.SUCCESS && server.status != ServerError.UNINITIALIZED) {
                     continue
                 }
-
-                for ((key, server) in hashMap) {
-                    if (server.status != ServerError.SUCCESS && server.status != ServerError.UNINITIALIZED) {
-                        continue
-                    }
-                    getServerInfo(server)
-                    if (server.status != ServerError.SUCCESS) {
-                        hashMap[key] = server
-                        continue
-                    }
+                getServerInfo(server)
+                if (server.status != ServerError.SUCCESS) {
                     hashMap[key] = server
-                    println("Cache Service: Successfully updated information for ${server.hostname}")
+                    continue
                 }
+                hashMap[key] = server
+                println("Cache Service: Successfully updated information for ${server.hostname}")
             }
         }
     }
