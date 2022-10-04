@@ -2,7 +2,7 @@
 A silly lightweight Minecraft server API used for server statuses.
 
 # API Calls
-The following describes Compass's API calls
+The following describes Compass's API calls.
 
 ### Initialization 
 This API call is used to initialize a server to the API, so that way calls to ping can be cached.
