@@ -1,5 +1,5 @@
 # 📜️ Compass [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/isebasus/Archive/blob/master/LICENSE)
-A silly lightweight Minecraft server API used for server statues
+A silly lightweight Minecraft server API used for server statuses. This API uses a netty client to interact with Minecraft servers to exchange packets in order to retrieve status data. 
 
 # API Calls
 The following describes Compass's API calls
