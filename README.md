@@ -11,19 +11,19 @@ This API call is used to initialize a server to the API, so that way calls to pi
 
 The response should contain the payload:
 ```
-    hostname: String,
-    port: Int,
-    protocolVersion: Int,
-    serverVersion: String,
-    maxPlayerCount: Int,
-    playerCount: List,
-    description: String,
-    favicon: String,
-    ping: Long,
-    averagePing: List,
-    numberOfPings: Long,
-    status: ServerError
-    lastClientPing: Long
+hostname: String,
+port: Int,
+protocolVersion: Int,
+serverVersion: String,
+maxPlayerCount: Int,
+playerCount: List,
+description: String,
+favicon: String,
+ping: Long,
+averagePing: List,
+numberOfPings: Long,
+status: ServerError
+lastClientPing: Long
 ```
 
 ### Ping
@@ -33,9 +33,9 @@ This API call is used after initialization, and the call will now use the API ca
 
 The response should contain the payload: 
 ```
-    playerCount: List,
-    ping: Long,
-    averagePing: List,
-    numberOfPings: Long,
-    status: ServerError
+playerCount: List,
+ping: Long,
+averagePing: List,
+numberOfPings: Long,
+status: ServerError
 ```
