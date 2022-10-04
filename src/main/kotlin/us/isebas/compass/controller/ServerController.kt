@@ -1,6 +1,7 @@
 package us.isebas.compass.controller
 
 import org.springframework.data.mongodb.core.aggregation.AccumulatorOperators
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import us.isebas.compass.document.MinecraftServer
@@ -53,15 +54,16 @@ class ServerController() {
     * }
     * */
     @PostMapping("v1/ping")
-    fun pingServer(@RequestBody server: MinecraftServer): ResponseEntity<ServerStatus> {
+    fun pingServer(@RequestBody server: MinecraftServer): ResponseEntity<Any> {
         val status = ServerStatus()
 
         val address: String
         try {
             address = InetSocketAddress(server.hostname, server.port).toString()
-        } catch (socketError: Error) {
-            status.status = ServerError.NOTFOUND
-            return ResponseEntity.ok(status)
+        } catch (socketError: Exception) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(socketError.message)
         }
 
         val cachedServer: MinecraftServer? = hashMap[address]
@@ -69,13 +71,19 @@ class ServerController() {
             hashMap.remove(address)
 
             status.status = ServerError.UNINITIALIZED
-            return ResponseEntity.ok(status)
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Could not fetch server info: " +
+                        "${server.status}")
         }
         if (cachedServer.status != ServerError.SUCCESS) {
             hashMap.remove(address)
 
             status.status = cachedServer.status
-            return ResponseEntity.ok(status)
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Could not fetch server info: " +
+                        "${server.status}")
         }
 
         // Return updated server information
@@ -102,15 +110,16 @@ class ServerController() {
     * }
     * */
     @PostMapping("v1/init")
-    fun initServer(@RequestBody minecraftServer: MinecraftServer): ResponseEntity<MinecraftServer> {
+    fun initServer(@RequestBody minecraftServer: MinecraftServer): ResponseEntity<Any> {
         val server: MinecraftServer = minecraftServer
 
         val address: String
         try {
             address = InetSocketAddress(server.hostname, server.port).toString()
-        } catch (socketError: Error) {
-            server.status = ServerError.NOTFOUND
-            return ResponseEntity.ok(server)
+        } catch (socketError: Exception) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(socketError.message)
         }
 
         // Check if server is cached
@@ -127,7 +136,10 @@ class ServerController() {
         // If cache is not hit or if there is an error with the server
         getServerInfo(server)
         if (server.status != ServerError.SUCCESS) {
-            return ResponseEntity.ok(server)
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Could not fetch server info: " +
+                        "${server.status}")
         }
 
         // Set last client ping for dishwasher

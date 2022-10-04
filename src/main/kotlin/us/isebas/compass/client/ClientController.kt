@@ -30,14 +30,12 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
         future.addListener {
             if (!it.isSuccess) {
                 handleError(it.cause())
+                println("Client: Connection with ${server.hostname} unsuccessful.")
+            } else {
+                println("Client: Connection with ${server.hostname} successful.")
             }
-            println("Client: Connection with ${server.hostname} successful.")
         }
         return completableFuture
-    }
-
-    open fun getClientPool() {
-        // TODO implement something
     }
 
     open fun disconnect() {
@@ -94,6 +92,7 @@ open class ClientController(private val server: MinecraftServer) : SimpleChannel
 
     override fun channelInactive(context: ChannelHandlerContext) {
         println("Client: Completed fetching server status for ${server.hostname} ")
+        channel.close();
     }
 
 }
