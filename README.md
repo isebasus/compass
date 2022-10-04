@@ -1,4 +1,4 @@
-# 📜️ Compass [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/isebasus/Archive/blob/master/LICENSE)
+# 📜️ compass [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/isebasus/Archive/blob/master/LICENSE)
 A silly lightweight Minecraft server API used for server statuses.
 
 # API Calls
