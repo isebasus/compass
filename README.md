@@ -1,7 +1,7 @@
 # 📜️ Compass [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/isebasus/Archive/blob/master/LICENSE)
 A silly lightweight Minecraft server API used for server statues
 
-# Compass API
+# API Calls
 The following describes Compass's API calls
 
 ### Initialization 
