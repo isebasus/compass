@@ -9,7 +9,7 @@ This API call is used to initialize a server to the API, so that way calls to pi
 
 ``/v1/init``
 
-The response should contain the payload:
+#### Response
 ```
 hostname: String,
 port: Int,
@@ -31,7 +31,7 @@ This API call is used after initialization, and the call will now use the API ca
 
 ``/v1/ping``
 
-The response should contain the payload: 
+#### Response
 ```
 playerCount: List,
 ping: Long,
