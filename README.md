@@ -1,4 +1,4 @@
-# 🗒️ Compass [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/isebasus/Archive/blob/master/LICENSE)
+# 🧭️ Compass [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/isebasus/Archive/blob/master/LICENSE)
 ## A lightweight Minecraft server API used for server statues
 
 # Compass API
@@ -9,7 +9,8 @@ This API call is used to initialize a server to the API, so that way calls to pi
 
 ``/v1/init``
 
-``response = {
+```
+response = {
     hostname: String,
     port: Int,
     protocolVersion: Int,
@@ -23,17 +24,20 @@ This API call is used to initialize a server to the API, so that way calls to pi
     numberOfPings: Long,
     status: ServerError
     lastClientPing: Long
-}``
+}
+```
 
 ### Ping
 This API call is used after initialization, and the call will now use the API cache. The response will also contain a smaller payload. 
 
 ``/v1/ping``
 
-``response = {
+```
+response = {
     playerCount: List,
     ping: Long,
     averagePing: List,
     numberOfPings: Long,
     status: ServerError
-}``
+}
+```
